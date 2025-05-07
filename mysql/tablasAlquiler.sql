@@ -75,5 +75,3 @@ primary key (fk_cochere, fk_reservare),
 foreign key (fk_reservare) references reservas(id_reserva),
 foreign key (fk_cochere) references coches(id_coche)
 );
-
--- hola nsjhdsghsh
