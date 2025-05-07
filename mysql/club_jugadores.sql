@@ -49,4 +49,4 @@ INSERT INTO jugadores VALUES (32,'Tomas','Cubelli','7157940M','1963-4-20');
 INSERT INTO jugadores VALUES (33,'Juan','Imhoff','9049517C','1987-9-23');
 
 UNLOCK TABLES; -- desbloquea la tabla
-
+-- hola
