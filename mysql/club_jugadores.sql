@@ -50,4 +50,4 @@ INSERT INTO jugadores VALUES (33,'Juan','Imhoff','9049517C','1987-9-23');
 
 UNLOCK TABLES; -- desbloquea la tabla
 
--- vamos a cambiar
+-- vamos
