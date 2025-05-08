@@ -46,11 +46,11 @@ insert into coches_por_reserva values(10, 1, 0, 358, NULL, 27), (17, 2, 0, 360, 
 /*!40000 ALTER TABLE coches_por_reserva ENABLE KEYS */;
 UNLOCK TABLES;
 
-LOCK TABLES coches_por_reserva WRITE, reservas WRITE, coches WRITE;
-update coches_por_reserva
-join reservas on fk_reserva=id_reserva
-join coches on fk_coche = id_coche
-set precio = datediff(fecha_fin, fecha_inicio) *precio_alquiler;
-UNLOCK TABLES;
+-- LOCK TABLES coches_por_reserva WRITE, reservas WRITE, coches WRITE;
+-- update coches_por_reserva
+-- join reservas on fk_reserva=id_reserva
+-- join coches on fk_coche = id_coche
+-- set precio = datediff(fecha_fin, fecha_inicio) *precio_alquiler;
+-- UNLOCK TABLES;
 
 
