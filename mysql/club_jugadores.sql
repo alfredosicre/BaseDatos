@@ -1,7 +1,7 @@
 CREATE DATABASE  IF NOT EXISTS `00_club`;
 USE `00_club`;
 
-DROP TABLE IF EXISTS `jugadores`; -- elimina la tabla si existe
+DROP TABLE IF EXISTS `jugadores`;
 
 CREATE TABLE `jugadores` (
   `idjugadores` int NOT NULL,
@@ -9,10 +9,10 @@ CREATE TABLE `jugadores` (
   `apellidos` varchar(45) DEFAULT NULL,
   `dni` varchar(10) DEFAULT NULL,
   `fecha_nacimiento` date DEFAULT NULL,
-  PRIMARY KEY (`idjugadores`) -- clave primaria
+  PRIMARY KEY (`idjugadores`)
 );
 
-LOCK TABLES `jugadores` WRITE; -- bloquea la tabla para que nadie la utilice
+LOCK TABLES `jugadores` WRITE;
 
 INSERT INTO jugadores VALUES (1,'Javier','Ortega Desio','4473754P','1984-10-2');
 INSERT INTO jugadores VALUES (2,'Marcos','Ayerza','7940816K','1984-5-8');
@@ -48,5 +48,4 @@ INSERT INTO jugadores VALUES (31,'Ramiro','Herrera','6172837K','1981-1-17');
 INSERT INTO jugadores VALUES (32,'Tomas','Cubelli','7157940M','1963-4-20');
 INSERT INTO jugadores VALUES (33,'Juan','Imhoff','9049517C','1987-9-23');
 
-UNLOCK TABLES; -- desbloquea la tabla
--- hola
+UNLOCK TABLES;
