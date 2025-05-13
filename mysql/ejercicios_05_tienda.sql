@@ -42,7 +42,7 @@ select * from fabricantes order by fabricante asc;
 select * from fabricantes order by fabricante desc;
 
 -- Lista los nombres de los productos ordenados en primer lugar por el nombre de forma ascendente y en segundo lugar por el precio de forma descendente.
-select * from fabricantes order by fabricante asc, precio desc;
+select * from productos order by producto asc, precio desc;
 
 -- Devuelve una lista con las 5 primeras filas de la tabla fabricante.
 select * from fabricantes limit 5;
@@ -105,4 +105,4 @@ select * from productos where producto like '%Portátil%';
 select * from productos where producto like '%Monitor%' and precio < 215;
 
 -- Lista el nombre y el precio de todos los productos que tengan un precio mayor o igual a 180€. Ordene el resultado en primer lugar por el precio (en orden descendente) y en segundo lugar por el nombre (en orden ascendente).
-select * from productos order by precio asc, nombre desc, where precio >= 180;
+select * from productos where precio >= 180 order by precio desc, producto asc;
