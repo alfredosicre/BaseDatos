@@ -1,5 +1,6 @@
 -- base de datos 06_empleados
 -- 1 Devuelve un listado con los empleados y los datos de los departamentos donde trabaja cada uno.
+use 06_empleados;
 select nombre, apellido1, apellido2, departamento from empleados join departamentos on fk_departamento = id_departamento;
   
 -- 2 Devuelve un listado con los empleados y los datos de los departamentos donde trabaja cada uno. Ordena el resultado, en primer lugar por el nombre del departamento (en orden alfabético) y en segundo lugar por los apellidos y el nombre de los empleados.
@@ -50,7 +51,8 @@ select * from empleados left join departamentos on fk_departamento = id_departam
 select * from empleados right join departamentos on fk_departamento = id_departamento order by departamento;
 
 -- 15 Devuelve un listado con los empleados que no tienen ningún departamento asociado y los departamentos que no tienen ningún empleado asociado. Ordene el listado alfabéticamente por el nombre del departamento.
-select * from empleados left join departamentos on fk_departamento=id_departamento where fk_departamento is null
+select * from empleados left join departamentos on fk_departamento=id_departamento 
+	where fk_departamento is null
 union
-select * from empleados right join departamentos on fk_departamento=id_departamento
-where id_empleado  is null order by departamento, id_empleado;
+	select * from empleados right join departamentos on fk_departamento=id_departamento
+	where id_empleado is null order by departamento, id_empleado;
