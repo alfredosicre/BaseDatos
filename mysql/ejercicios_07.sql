@@ -53,8 +53,13 @@ select avg(precio) from productos;
 select min(precio) from productos;
 -- 18 Calcula el precio más caro de todos los productos.
 select max(precio) from productos;
--- 19 Lista el nombre y el precio del producto más barato. -- NO
--- 20 Lista el nombre y el precio del producto más caro. -- NO
+
+-- 19 Lista el nombre y el precio del producto más barato.
+select producto, precio from productos where precio = (select min(precio) from productos);
+
+-- 20 Lista el nombre y el precio del producto más caro.
+select producto, precio from productos where precio = (select max(precio) from productos);
+
 -- 21 Calcula la suma de los precios de todos los productos.
 select sum(precio) from productos;
 
@@ -78,8 +83,8 @@ select max(precio), min(precio), avg(precio), count(id_producto), fabricante fro
 
 -- 28 Muestra el número total de productos que tiene cada uno de los fabricantes. El listado también debe incluir los fabricantes que no tienen ningún producto.
    --  El resultado mostrará dos columnas, una con el nombre del fabricante y otra con el número de productos que tiene. Ordene el resultado descendentemente por el número de productos.
-select fabricante, count(id_fabricante) numerodeproductos from fabricantes f
-	left join productos p on p.fk_fabricante = f.id_fabricante
+select fabricante, count(id_producto) numerodeproductos from productos p
+	right join fabricantes f on p.fk_fabricante = f.id_fabricante
     group by id_fabricante order by numerodeproductos desc;
     
 -- 29 Muestra el precio máximo, precio mínimo y precio medio de los productos de cada uno de los fabricantes.
@@ -137,4 +142,10 @@ select id_fabricante, fabricante, count(id_producto) NumProductos from fabricant
 select id_fabricante, fabricante, count(id_producto) from fabricantes f 
 	join productos p on p.fk_fabricante = f.id_fabricante where precio>=220
     group by id_fabricante;
+    
+-- lo mismo que el 38 pero con precio >=220 y que tenga mas de un producto en esas condiciones
+select id_fabricante, fabricante, count(id_producto) cant from fabricantes f 
+	join productos p on p.fk_fabricante = f.id_fabricante where precio>=220
+    group by id_fabricante
+    having cant > 1;
 
