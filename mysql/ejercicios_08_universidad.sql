@@ -79,12 +79,15 @@ select max(nota), min(nota), max(nota)-min(nota) resultado, count(id_alumno) alu
 -- 14 Obtener de Cada profesor las asignaturas que imparte, con los alumnos en cada una de ellas y su nota
 select id_profesor, profesores.nombre, profesores.apellido1, asignatura, id_alumno, alumnos.nombre, alumnos.apellido1, nota from profesores 
 	join asignaturas on id_profesor = fk_profesor
-		join notas on fk_asignatura = id_asignatura
-			join alumnos on fk_alumno = id_alumno  where nota is not null order by id_profesor, id_asignatura;
+		 join notas on fk_asignatura = id_asignatura
+			 join alumnos on fk_alumno = id_alumno order by id_profesor, id_asignatura, alumnos.apellido1;
 
 -- *** Subconsultas ***
 -- 15 Cantidad de alumnos aprobados por ciudad, usando una subconsulta
-
+select ciudad, count(id_alumno) alumnos from alumnos
+		left join notas on id_alumno = fk_alumno where nota >= 5
+    group by ciudad order by ciudad;
+  
 -- 16 Notas de las asignaturas de cada uno de los alumnos comparada con la nota media de la asignatura
 
 -- 17 Alumnos que están cursando asignaturas con los profesores de Málaga (subconsulta en JOIN)
