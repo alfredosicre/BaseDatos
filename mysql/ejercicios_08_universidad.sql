@@ -33,17 +33,18 @@ select timestampdiff(year, fecha_nacimiento, now()) edad, avg(nota) from alumnos
     group by edad order by edad;
     
 -- 8 Cantidad de alumnos matriculados en más de dos asignaturas
-select count(fk_alumno) alumno from alumnos
+select * from alumnos join 
+	(select count(fk_alumno) alumno from alumnos
 	left join notas on fk_alumno = id_alumno
     group by fk_alumno
-    having alumno >2;
+    having alumno >2) matri 
+    on fk_alumno = matri.id_alumno;
   
 	
 
 -- 9 Obtener los datos de los alumnos que no cursan ninguna asignatura ni tienen ninguna nota
-select * from alumnos a join notas n on n.fk_alumno = a.id_alumno
+select concat(apellido1,apellido2,nombre) nombrecompleto, fk_alumno, nota from alumnos left join notas on fk_alumno = id_alumno where fk_alumno is null;
 	
-
 -- 10 Cantidad de notas y media de notas de cada alumno
 -- 11 Listado de profesores con la cantidad de asignaturas que imparte cada uno de ellos, aunque ahora no estén impartiendo ninguna.
 -- 12 Notas medias por asignaturas que imparte cada profesor
