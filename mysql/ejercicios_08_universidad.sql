@@ -33,12 +33,17 @@ select timestampdiff(year, fecha_nacimiento, now()) edad, avg(nota) from alumnos
     group by edad order by edad;
     
 -- 8 Cantidad de alumnos matriculados en más de dos asignaturas
-select * from alumnos join 
+select count(id_alumno) alumnosMatriculados from alumnos join 
 	(select count(fk_alumno) alumno from alumnos
 	left join notas on fk_alumno = id_alumno
     group by fk_alumno
     having alumno >2) matri 
-    on fk_alumno = matri.id_alumno;
+    on id_alumno = alumno;
+    
+select count(fk_alumno) alumno from alumnos
+	left join notas on fk_alumno = id_alumno
+    group by fk_alumno
+    having alumno >2;
   
 	
 
@@ -46,8 +51,23 @@ select * from alumnos join
 select concat(apellido1,apellido2,nombre) nombrecompleto, fk_alumno, nota from alumnos left join notas on fk_alumno = id_alumno where fk_alumno is null;
 	
 -- 10 Cantidad de notas y media de notas de cada alumno
+select id_alumno, nombre, apellido1, apellido2, count(nota) cantidadNotas, avg(nota) mediaNotas from alumnos
+	left join notas on fk_alumno = id_alumno
+    group by id_alumno;
+
 -- 11 Listado de profesores con la cantidad de asignaturas que imparte cada uno de ellos, aunque ahora no estén impartiendo ninguna.
+select id_profesor, count(id_asignatura) CantidadAsignaturas from profesores 
+	left join asignaturas on id_profesor = fk_profesor 
+    group by id_profesor order by id_profesor;
+
 -- 12 Notas medias por asignaturas que imparte cada profesor
+select id_profesor, asignatura, avg(nota) media from profesores
+	left join asignaturas on id_profesor = fk_profesor
+		left join notas on id_asignatura = fk_asignatura
+		group by id_profesor, id_asignatura order by id_profesor;
+    
+ -- (select producto, precio from productos where precio = (select min(precio) from productos);)
+    
 -- 13 Mostrar, de la Asignatura “Programacion I”, la nota máxima, mínima y la diferencia entre ambas. 
    -- Devolver también el número de alumnos que la han cursado.
 -- 14Obtener de Cada profesor las asignaturas que imparte, con los alumnos en cada una de ellas y su nota
