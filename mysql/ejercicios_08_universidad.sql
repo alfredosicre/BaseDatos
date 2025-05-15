@@ -64,13 +64,23 @@ select id_profesor, count(id_asignatura) CantidadAsignaturas from profesores
 select id_profesor, asignatura, avg(nota) media from profesores
 	left join asignaturas on id_profesor = fk_profesor
 		left join notas on id_asignatura = fk_asignatura
-		group by id_profesor, id_asignatura order by id_profesor;
+		group by id_profesor, id_asignatura
+        having asignatura is not null order by id_profesor;
     
  -- (select producto, precio from productos where precio = (select min(precio) from productos);)
     
 -- 13 Mostrar, de la Asignatura “Programacion I”, la nota máxima, mínima y la diferencia entre ambas. 
    -- Devolver también el número de alumnos que la han cursado.
--- 14Obtener de Cada profesor las asignaturas que imparte, con los alumnos en cada una de ellas y su nota
+select max(nota), min(nota), max(nota)-min(nota) resultado, count(id_alumno) alumnos from asignaturas
+	join notas on id_asignatura = fk_asignatura   
+		join alumnos on fk_alumno = id_alumno where asignatura = 'programacion I' and nota is not null
+        group by id_asignatura;
+	
+-- 14 Obtener de Cada profesor las asignaturas que imparte, con los alumnos en cada una de ellas y su nota
+select id_profesor, profesores.nombre, profesores.apellido1, asignatura, id_alumno, alumnos.nombre, alumnos.apellido1, nota from profesores 
+	join asignaturas on id_profesor = fk_profesor
+		join notas on fk_asignatura = id_asignatura
+			join alumnos on fk_alumno = id_alumno  where nota is not null order by id_profesor, id_asignatura;
 
 -- *** Subconsultas ***
 -- 15 Cantidad de alumnos aprobados por ciudad, usando una subconsulta
