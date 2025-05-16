@@ -123,7 +123,7 @@ select distinct alumnos.* from alumnos
 -- calculo de nota media del alumno de ese dni, subconsulta escalar para usar en el having.
 select avg(nota) media from notas
 	join alumnos on fk_alumno = id_alumno where dni = '55630078R';
-    
+-- ------- consulta con subconsulta ----
 select id_asignatura, asignatura, avg(nota) media from asignaturas
 	join notas on id_asignatura = fk_asignatura
     group by id_asignatura
