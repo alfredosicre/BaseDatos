@@ -61,20 +61,20 @@ select id_profesor, count(id_asignatura) CantidadAsignaturas from profesores
     group by id_profesor order by id_profesor;
 
 -- 12 Notas medias por asignaturas que imparte cada profesor
-select id_profesor, asignatura, avg(nota) media from profesores
-	left join asignaturas on id_profesor = fk_profesor
-		left join notas on id_asignatura = fk_asignatura
-		group by id_profesor, id_asignatura
-        having asignatura is not null order by id_profesor;
+select p.*, a.*, avg(nota) media from profesores p -- lo correcto es detallar los campos que yo quiero que salgan
+	join asignaturas a on p.id_profesor = a.fk_profesor
+		join notas n on a.id_asignatura = n.fk_asignatura where n.nota is not null
+		group by p.id_profesor, a.id_asignatura
+        order by p.id_profesor, a.id_asignatura;
     
  -- (select producto, precio from productos where precio = (select min(precio) from productos);)
     
 -- 13 Mostrar, de la Asignatura “Programacion I”, la nota máxima, mínima y la diferencia entre ambas. 
    -- Devolver también el número de alumnos que la han cursado.
-select max(nota), min(nota), max(nota)-min(nota) resultado, count(id_alumno) alumnos from asignaturas
-	join notas on id_asignatura = fk_asignatura   
-		join alumnos on fk_alumno = id_alumno where asignatura = 'programacion I' and nota is not null
-        group by id_asignatura;
+select max(nota), min(nota), max(nota)-min(nota) resultado, count(id_alumno) alumnos from asignaturas a
+	join notas n on a.id_asignatura = n.fk_asignatura   
+		join alumnos al on n.fk_alumno = al.id_alumno where a.asignatura = 'programacion I' and n.nota is not null
+        group by a.id_asignatura;
 	
 -- 14 Obtener de Cada profesor las asignaturas que imparte, con los alumnos en cada una de ellas y su nota
 select id_profesor, profesores.nombre, profesores.apellido1, asignatura, id_alumno, alumnos.nombre, alumnos.apellido1, nota from profesores 
@@ -83,13 +83,49 @@ select id_profesor, profesores.nombre, profesores.apellido1, asignatura, id_alum
 			 join alumnos on fk_alumno = id_alumno order by id_profesor, id_asignatura, alumnos.apellido1;
 
 -- *** Subconsultas ***
--- 15 Cantidad de alumnos aprobados por ciudad, usando una subconsulta
-select ciudad, count(id_alumno) alumnos from alumnos
-		left join notas on id_alumno = fk_alumno where nota >= 5
+-- 15 Cantidad de alumnos aprobados por ciudad, usando una subconsulta, no cantidad de asignaturas aprovadas por ciudad.
+-- sin subconsulta:
+select ciudad, count(distinct id_alumno) alumnoss from alumnos
+		join notas on id_alumno = fk_alumno where nota >= 5
     group by ciudad order by ciudad;
+ -- -------------------------------------------------   
+-- con subconsulta:
+-- alumnos diferentes que han aprovado
+select distinct fk_alumno from notas where nota >= 5;
+
+select ciudad, count(id_alumno) from alumnos where id_alumno in (select distinct fk_alumno from notas where nota >= 5) 
+	group by ciudad;
   
 -- 16 Notas de las asignaturas de cada uno de los alumnos comparada con la nota media de la asignatura
+-- calculamos la nota media de cada asignatura
+select fk_asignatura, avg(nota) media from notas
+	group by fk_asignatura;
+    
+select alu.id_alumno, alu.apellido1, a.id_asignatura, a.asignatura, n.nota, medias.media 
+			from alumnos alu 
+						join notas n on alu.id_alumno = n.fk_alumno
+						join asignaturas a on n.fk_asignatura = a.id_asignatura
+                        join (select fk_asignatura, avg(nota) media from notas
+							group by fk_asignatura) medias on n.fk_asignatura = medias.fk_asignatura
+						where n.nota is not null;
 
 -- 17 Alumnos que están cursando asignaturas con los profesores de Málaga (subconsulta en JOIN)
+select id_profesor from profesores where ciudad = 'malaga';
+
+-- asignaturas de profesores de malaga
+select id_asignatura from asignaturas where fk_profesor in (select id_profesor from profesores where ciudad = 'malaga'); 
+
+select distinct alumnos.* from alumnos 
+	join notas n on id_alumno = fk_alumno
+    join (select id_asignatura from asignaturas where fk_profesor in (select id_profesor from profesores where ciudad = 'malaga')) asigs on n.fk_asignatura = asigs.id_asignatura;
 
 -- 18 Nota media por asignatura, sólo aquéllas que la nota media sea mayor a la nota media del alumnos con dni 55630078R
+-- calculo de nota media del alumno de ese dni, subconsulta escalar para usar en el having.
+select avg(nota) media from notas
+	join alumnos on fk_alumno = id_alumno where dni = '55630078R';
+    
+select id_asignatura, asignatura, avg(nota) media from asignaturas
+	join notas on id_asignatura = fk_asignatura
+    group by id_asignatura
+    having media > (select avg(nota) media from notas
+		join alumnos on fk_alumno = id_alumno where dni = '55630078R');
