@@ -110,7 +110,7 @@ select alu.id_alumno, alu.apellido1, a.id_asignatura, a.asignatura, n.nota, medi
 						where n.nota is not null;
                         
 -- 16B Notas de las asignaturas de cada uno de los alumnos comparada con la nota media de la asignatura de los demas alumnos, subconsulta correlacionada, escalar
-select alu.id_alumno, alu.apellido1, a.id_asignatura, a.asignatura, n.nota, medias.media, (select avg(nota) from notas where fk_alumno != alu.id_alumno and fk_asignatura = a.id_asignatura)
+select alu.id_alumno, alu.apellido1, a.id_asignatura, a.asignatura, n.nota, medias.media, (select avg(nota) from notas where fk_alumno != alu.id_alumno and fk_asignatura = a.id_asignatura) media_resto
 			from alumnos alu 
 						join notas n on alu.id_alumno = n.fk_alumno
 						join asignaturas a on n.fk_asignatura = a.id_asignatura
@@ -138,3 +138,13 @@ select id_asignatura, asignatura, avg(nota) media from asignaturas
     group by id_asignatura
     having media > (select avg(nota) media from notas
 		join alumnos on fk_alumno = id_alumno where dni = '55630078R');
+        
+-- 19 alumnos que no cursan asignaturas, subconsulta correlacionada.
+select * from alumnos a
+		where not exists(select * from notas where fk_alumno = a.id_alumno);
+        
+-- igual a:
+select a.* from alumnos a 
+	left join notas on a.id_alumno = fk_alumno where fk_alumno is null;
+    
+
