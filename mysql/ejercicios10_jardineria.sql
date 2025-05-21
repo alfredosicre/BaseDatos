@@ -1,4 +1,5 @@
 -- *** BBDD 10_jardineria ***
+use 10_jardineria;
 
 -- 1 Devuelve el nombre de los clientes que no hayan hecho pagos y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
 select distinct c.nombre_cliente, o.ciudad from clientes c
@@ -16,24 +17,120 @@ select distinct c.id_cliente, c.nombre_cliente from clientes c
 	join pagos pa on c.id_cliente = pa.fk_cliente where pa.id_transaccion is not null order by c.id_cliente;
 
 -- 4 Calcula el número de clientes que tiene la empresa.
+select count(id_cliente) from clientes;
+
 -- 5 Devuelve el nombre del producto que tenga el precio de venta más caro.
+select max(precio_venta) maxi from productos;
+
+select * from productos p where p.precio_venta >= (select max(pro.precio_venta) maxi from productos pro);
+
 -- 6 Devuelve un listado indicando todas las ciudades donde hay oficinas y el número de empleados que tiene.
+select ciudad, count(id_empleado) from oficinas
+	left join empleados on id_oficina = fk_oficina
+    group by id_oficina order by ciudad;
+
 -- 7 Devuelve un listado con el código de pedido, código de cliente, fecha esperada y fecha de entrega de los pedidos que no han sido entregados a tiempo.
+select id_pedido, fk_cliente, fecha_esperada, fecha_entrega from pedidos where fecha_entrega > fecha_esperada;
+
 -- 8 Devuelve un listado de los productos que nunca han aparecido en un pedido.
+select * from productos
+	left join detalles_pedido on id_producto = fk_producto where fk_pedido is null;
+
 -- 9 Calcula el número de clientes que no tiene asignado representante de ventas.
+select count(id_cliente) from clientes where fk_empleado_rep_ventas is null;
+
 -- 10 Devuelve un listado con el nombre, apellidos y puesto de aquellos empleados que no sean representantes de ventas.
+select * from empleados where puesto != 'representante ventas';
+
+select count(*) from clientes where fk_empleado_rep_ventas is null;
+
 -- 11 Devuelve un listado con todos los clientes que sean de la ciudad de Madrid y cuyo representante de ventas tenga el código de empleado 11 o 30.
+select * from clientes 
+	join empleados on fk_empleado_rep_ventas = id_empleado where ciudad = 'madrid' and ((id_empleado = 11) or (id_empleado = 30));
+
 -- 12 Devuelve el nombre del puesto, nombre, apellidos y email del jefe de la empresa.
+select * from empleados where fk_jefe is null;
+
 -- 13 Devuelve un listado con los clientes que han realizado algún pedido pero no han realizado ningún pago, utilizando una subconsulta
+select * from pedidos ped 
+	left join pagos pa on ped.fk_cliente = pa.fk_cliente where id_transaccion is null order by id_pedido;
+    
+select nombre_cliente from clientes
+	 join (select * from pedidos ped 
+		left join pagos pa on ped.fk_cliente = pa.fk_cliente where id_transaccion is null order by id_pedido) sub on clientes.id_cliente = sub.fk_cliente;
+
 -- 14 Devuelve un listado con todos los pagos que se realizaron en el año 2008 mediante Paypal. Ordene el resultado de mayor a menor.
+select * from pagos where (year(fecha_pago) = 2008) and forma_pago = 'paypal' order by id_transaccion;
+
 -- 15 Devuelve el nombre, apellidos, puesto y teléfono de la oficina de aquellos empleados que no sean representante de ventas de ningún cliente, utilizando una subconsulta
+-- esta es la subconsulta
+select empleados.*, oficinas.* from empleados 
+	left join clientes on id_empleado = fk_empleado_rep_ventas 
+    left join oficinas on id_oficina = fk_oficina
+    where fk_empleado_rep_ventas is null;
+    
+select e1.nombre, e1.apellido1, e1.apellido2, e1.puesto from empleados e1
+	where id_empleado in 
+		(select id_empleado from empleados
+		left join clientes on id_empleado = fk_empleado_rep_ventas 
+		left join oficinas on id_oficina = fk_oficina
+		where fk_empleado_rep_ventas is null);
+        
+-- esta es la buena, con la subconsulta de arriba --------------------------------------------------------        
+select nombre, apellido1, apellido2, puesto, oficinas.telefono telefono_oficina from oficinas
+	join (select empleados.*, oficinas.* from empleados 
+	left join clientes on id_empleado = fk_empleado_rep_ventas 
+    left join oficinas on id_oficina = fk_oficina
+    where fk_empleado_rep_ventas is null) sub on oficinas.id_oficina = sub.id_oficina; 
+	
+
 -- 16 Muestra el nombre de los clientes que hayan realizado pagos junto con el nombre de sus representantes de ventas.
--- 17 Devuelve el nombre del producto del que se han vendido más unidades. (Tenga en cuenta que tendrá que calcular cuál es el número total de unidades que se han vendido de cada producto a partir de los datos de la tabla detalle_pedido)
+select DISTINCT clientes.nombre_cliente, empleados.nombre NombreRepresentante, empleados.apellido1 ApellidoRepresentante from clientes 
+	left join pagos on id_cliente = fk_cliente 
+		left join empleados on id_empleado = fk_empleado_rep_ventas
+		where id_transaccion is not null order by clientes.nombre_cliente;
+
+-- 17 Devuelve el nombre del producto del que se han vendido más unidades. (Tenga en cuenta que tendrá que calcular cuál es el número total de unidades que se han vendido de 
+-- cada producto a partir de los datos de la tabla detalle_pedido)
+
+select max(cant) from (select sum(cantidad) cant from detalles_pedido
+group by fk_producto) cantidades;
+	
+select nombre, sum(cantidad) mas_vendido from productos 
+	join detalles_pedido on id_producto = fk_producto
+    group by id_producto
+    having mas_vendido = (select max(cant) from (select sum(cantidad) cant from detalles_pedido
+		group by fk_producto) cantidades) ;
+
 -- 18 Devuelve un listado que muestre los empleados que no tienen una oficina asociada y los que no tienen un cliente asociado.
--- 19 La misma información que en la pregunta anterior, pero agrupada por código de producto.
+select * from empleados 
+	left join oficinas on fk_oficina = id_oficina
+		left join clientes on  fk_empleado_rep_ventas = id_empleado where id_cliente is null;
+
 -- 20 ¿Cuántos clientes existen con domicilio en la ciudad de Madrid?
+select count(ciudad) from clientes where ciudad = 'Madrid';
+
 -- 21 Devuelve un listado con el código de oficina y la ciudad donde hay oficinas.
+select id_oficina, count(ciudad), ciudad from oficinas
+group by id_oficina;
+
+select ciudad, count(ciudad) from oficinas
+group by ciudad;
+
 -- 22 Devuelve un listado con los datos de los empleados que no tienen clientes asociados y el nombre de su jefe asociado.
+select * from empleados 
+	left join clientes on  fk_empleado_rep_ventas = id_empleado where id_cliente is null;
+    
+select e.nombre, e.apellido1, e.id_empleado, e.fk_jefe, (select nombre from empleados where e.fk_jefe = id_empleado) jefe
+	from empleados e;
+    
+-- esta es la correcta
+select e.nombre, e.apellido1, e.apellido2, jefe.nombre, e.fk_jefe from empleados e
+	left join oficinas on fk_oficina = id_oficina
+		left join clientes on  fk_empleado_rep_ventas = id_empleado
+			left join empleados jefe on e.fk_jefe = jefe.id_empleado where id_cliente is null;
+    
+
 -- 23 Devuelve el producto que más unidades tiene en stock.
 -- 24 Muestra el nombre de los clientes que no hayan realizado pagos junto con el nombre de sus representantes de ventas.
 -- 25 Devuelve un listado con la ciudad y el teléfono de las oficinas de España.
