@@ -399,10 +399,45 @@ select * from empleados
 	left join oficinas on fk_oficina = id_oficina where id_oficina is null;
 
 -- *** Vistas ***
--- 80 Escriba una vista que se llame listado_pagos_clientes que muestre un listado donde aparezcan todos los clientes y los pagos que ha realizado cada uno de ellos. La vista deberá tener las siguientes columnas: nombre y apellidos del cliente concatenados, teléfono, ciudad, pais, fecha_pago, total del pago, id de la transacción
--- 81 Escriba una vista que se llame listado_pedidos_clientes que muestre un listado donde aparezcan todos los clientes y los pedidos que ha realizado cada uno de ellos. La vista deáber tener las siguientes columnas: nombre y apellidos del cliente concatendados, teléfono, ciudad, pais, código del pedido, fecha del pedido, fecha esperada, fecha de entrega y la cantidad total del pedido, que será la suma del producto de todas las cantidades por el precio de cada unidad, que aparecen en cada línea de pedido.
+-- 80 Escriba una vista que se llame listado_pagos_clientes que muestre un listado donde aparezcan todos los clientes y los pagos que ha realizado cada uno de ellos.
+--  La vista deberá tener las siguientes columnas: nombre y apellidos del cliente concatenados, teléfono, ciudad, pais, fecha_pago, total del pago, id de la transacción
+
+select concat(nombre_contacto, ' ', apellido_contacto) nombrecliente, telefono, ciudad, pais, fecha_pago, total, id_transaccion from clientes 
+	join pagos on id_cliente = fk_cliente;
+    
+-- una vista es una select guardada dandole un nombre:
+
+create or replace view listado_pagos_clientes as -- or replace es por si ya existe, no dar error
+	select id_cliente, concat(nombre_contacto, ' ', apellido_contacto) nombrecliente, telefono, ciudad, pais, fecha_pago, total, id_transaccion 
+    from clientes c 
+	join pagos p on c.id_cliente = p.fk_cliente;
+	
+
+-- 81 Escriba una vista que se llame listado_pedidos_clientes que muestre un listado donde aparezcan todos los clientes y los pedidos que ha realizado cada uno de ellos.
+-- La vista deáber tener las siguientes columnas: nombre y apellidos del cliente concatendados, teléfono, ciudad, pais, código del pedido, fecha del pedido, fecha esperada, 
+-- fecha de entrega y la cantidad total del pedido, que será la suma del producto de todas las cantidades por el precio de cada unidad, que aparecen en cada línea de pedido.
+select id_cliente, concat(nombre_contacto, ' ', apellido_contacto) nombrecliente, telefono, ciudad, pais, id_pedido, fecha_pedido, fecha_esperada, fecha_entrega, sum(precio_unidad*cantidad) totalpedido from clientes c
+	join pedidos p on c.id_cliente = p.fk_cliente
+		join detalles_pedido d on p.id_pedido = d.fk_pedido
+        group by fk_pedido order by nombrecliente, id_pedido;
+        
+create or replace view listado_pedidos_clientes as 
+	select id_cliente, concat(nombre_contacto, ' ', apellido_contacto) nombrecliente, telefono, ciudad, pais, id_pedido, fecha_pedido, fecha_esperada, fecha_entrega, sum(precio_unidad*cantidad) totalpedido from clientes c
+	join pedidos p on c.id_cliente = p.fk_cliente
+		join detalles_pedido d on p.id_pedido = d.fk_pedido
+        group by fk_pedido order by nombrecliente, id_pedido;
+
 -- 82 Utilice las vistas que ha creado en los pasos anteriores para devolver un listado de los clientes de la ciudad de Madrid que han realizado pagos.
+select id_cliente, nombrecliente from listado_pagos_clientes where ciudad = 'madrid';
+
 -- 83 Utilice las vistas que ha creado en los pasos anteriores para devolver un listado de los clientes que todavía no han recibido su pedido.
+select distinct nombrecliente from listado_pedidos_clientes where fecha_entrega is null;
+
 -- 84 Utilice las vistas que ha creado en los pasos anteriores para calcular el número de pedidos que se ha realizado cada uno de los clientes.
+select id_cliente, nombrecliente, count(*) from listado_pedidos_clientes
+	group by id_cliente order by id_cliente;
+
 -- 85 Utilice las vistas que ha creado en los pasos anteriores para calcular el valor del pedido máximo y mínimo que ha realizado cada cliente.
+select id_cliente, max(totalpedido) mayor, min(totalpedido) menor from listado_pedidos_clientes
+	group by id_cliente order by id_cliente;
 
