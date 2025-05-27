@@ -398,7 +398,7 @@ select distinct id_cliente, nombre_cliente from clientes
 select * from empleados 
 	left join oficinas on fk_oficina = id_oficina where id_oficina is null;
 
--- *** Vistas ***
+-- *** Vistas ********************************************************************************************************************************************************************
 -- 80 Escriba una vista que se llame listado_pagos_clientes que muestre un listado donde aparezcan todos los clientes y los pagos que ha realizado cada uno de ellos.
 --  La vista deberá tener las siguientes columnas: nombre y apellidos del cliente concatenados, teléfono, ciudad, pais, fecha_pago, total del pago, id de la transacción
 
@@ -430,7 +430,7 @@ create or replace view listado_pedidos_clientes as
 -- 82 Utilice las vistas que ha creado en los pasos anteriores para devolver un listado de los clientes de la ciudad de Madrid que han realizado pagos.
 select id_cliente, nombrecliente from listado_pagos_clientes where ciudad = 'madrid';
 
--- 83 Utilice las vistas que ha creado en los pasos anteriores para devolver un listado de los clientes que todavía no han recibido su pedido.
+-- 83 Utilice las vistas que ha creado en los pasos anteriores para devolver un listado de los clientes que todavía no han recibido su pedido. ,.-  <.   b.  , n.            
 select distinct nombrecliente from listado_pedidos_clientes where fecha_entrega is null;
 
 -- 84 Utilice las vistas que ha creado en los pasos anteriores para calcular el número de pedidos que se ha realizado cada uno de los clientes.
