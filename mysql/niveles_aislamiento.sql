@@ -1,4 +1,4 @@
-
+use 01_negocio;
 select @@session.transaction_isolation; -- por defecto esta como REPEATABLE-READ en mi sesion.
 
 -- cambiamos el primer nivel
@@ -45,3 +45,4 @@ select * from productos where idproducto = 1;
 
 select * from productos where idproducto = 1;
 commit;
+
