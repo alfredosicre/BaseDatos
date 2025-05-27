@@ -23,3 +23,6 @@ set autocommit = 0; -- MODIFICAMOS EL VALOR DE LA VARIABLE DEL SISTEMA AUTOCOMMI
 -- si el autocommit esta a 0, para que todo se actualice definitivamente hay que hacer un commit
 
 commit;
+
+update productos set prod_precio = 100 where idproducto = 23;
+
